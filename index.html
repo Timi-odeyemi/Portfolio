@@ -1769,7 +1769,7 @@
           <div class="form-group full textarea-group"><textarea name="message" class="form-textarea" rows="5" placeholder=" "
               id="message" required></textarea></div>
         </div>
-        <div id="form-result"></div>
+        <div id="form-result" style="display: none;"></div>
         <button type="submit" class="btn-submit magnetic">Send Message →</button>
       </form>
       <div class="socials">
@@ -1798,6 +1798,7 @@
   <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-hot-toast@0.1.0/dist/vanilla-hot-toast.min.js"></script>
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
@@ -1991,14 +1992,6 @@
         }
       });
     });
-    // submit feedback
-    document.querySelector('.btn-submit')?.addEventListener('click', function (e) {
-      e.preventDefault();
-      this.textContent = '✓ Message Sent!';
-      this.style.background = '#111';
-      setTimeout(() => { this.textContent = 'Send Message →'; this.style.background = ''; }, 2500);
-    });
-
     // particle canvas (simple aesthetic)
     const canvas = document.getElementById('particle-canvas');
     if (canvas) {
@@ -2046,48 +2039,81 @@
     const form = document.getElementById('contact-form');
     const result = document.getElementById('form-result');
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(form);
-      const object = Object.fromEntries(formData);
-      const json = JSON.stringify(object);
-      result.innerHTML = "Please wait...";
-      result.style.display = "block";
-      result.style.color = "var(--c-text)";
-      result.style.marginTop = "10px";
-      result.style.fontSize = "0.9rem";
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log("Form submitted!"); // Debug log
+        
+        const formData = new FormData(form);
+        const object = Object.fromEntries(formData);
+        const json = JSON.stringify(object);
+        
+        console.log("Sending payload:", json); // Debug log
+        
+        if (result) {
+          result.innerHTML = "Please wait...";
+          result.style.display = "block";
+          result.style.color = "var(--c-text)";
+          result.style.marginTop = "10px";
+          result.style.fontSize = "0.9rem";
+        }
 
-      fetch('https://api.web3forms.com/submit', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Accept': 'application/json'
-              },
-              body: json
-          })
-          .then(async (response) => {
-              let json = await response.json();
-              if (response.status == 200) {
-                  result.innerHTML = "Message sent successfully!";
-                  result.style.color = "green";
-                  form.reset();
-              } else {
-                  console.log(response);
-                  result.innerHTML = json.message;
+        fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: json
+            })
+            .then(async (response) => {
+                console.log("Response status:", response.status); // Debug log
+                let resJson = await response.json();
+                console.log("Response JSON:", resJson); // Debug log
+
+                if (response.status == 200) {
+                    if (window.toast) {
+                      toast.success("Message sent successfully!", {
+                        duration: 4000,
+                        position: 'bottom-center',
+                        style: {
+                          background: '#111',
+                          color: '#fff',
+                          fontFamily: 'Quicksand, sans-serif'
+                        }
+                      });
+                    }
+                    if (result) result.style.display = "none";
+                    form.reset();
+                } else {
+                    if (window.toast) {
+                      toast.error(resJson.message || "Submission failed");
+                    }
+                    if (result) {
+                      result.innerHTML = resJson.message || "Submission failed";
+                      result.style.color = "red";
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Fetch error:", error); // Debug log
+                if (window.toast) {
+                  toast.error("Something went wrong!");
+                }
+                if (result) {
+                  result.innerHTML = "Something went wrong!";
                   result.style.color = "red";
-              }
-          })
-          .catch(error => {
-              console.log(error);
-              result.innerHTML = "Something went wrong!";
-              result.style.color = "red";
-          })
-          .then(function() {
-              setTimeout(() => {
-                  result.style.display = "none";
-              }, 5000);
-          });
-    });
+                }
+            })
+            .finally(() => {
+                if (result && !result.innerHTML.includes("success")) {
+                  setTimeout(() => {
+                      if (result) result.style.display = "none";
+                  }, 5000);
+                }
+            });
+      });
+    }
   </script>
 </body>
 
