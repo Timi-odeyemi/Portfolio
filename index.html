@@ -310,7 +310,7 @@
       line-height: 0.95;
       letter-spacing: -0.04em;
       color: var(--c-text);
-      animation: fadeSlideUp 0.9s 0.1s ease both;
+      animation: fadeSlideUp 0.9s 0.2s ease both;
     }
 
     h1.hero-name span {
@@ -326,7 +326,7 @@
       color: var(--c-accent3);
       letter-spacing: 0.1em;
       margin: 20px 0 16px;
-      animation: fadeSlideUp 1s 0.2s ease both;
+      animation: fadeSlideUp 1s 0.35s ease both;
     }
 
     .hero-desc {
@@ -334,7 +334,7 @@
       color: var(--c-muted);
       line-height: 1.75;
       max-width: 480px;
-      animation: fadeSlideUp 1s 0.3s ease both;
+      animation: fadeSlideUp 1s 0.5s ease both;
     }
 
     .hero-actions {
@@ -342,7 +342,7 @@
       gap: 16px;
       margin-top: 40px;
       flex-wrap: wrap;
-      animation: fadeSlideUp 1s 0.4s ease both;
+      animation: fadeSlideUp 1s 0.65s ease both;
     }
 
     .btn-primary {
@@ -405,7 +405,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: fadeSlideUp 1s 0.5s ease both;
+      animation: fadeSlideUp 1s 0.8s ease both;
       overflow: visible;
       padding: 40px 60px;
     }
@@ -421,7 +421,7 @@
       inset: -30px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 70%);
-      animation: avatarGlow 4s ease-in-out infinite alternate;
+      animation: avatarGlow 3s ease-in-out infinite alternate;
     }
 
     @keyframes avatarGlow {
@@ -1840,7 +1840,7 @@
           entry.target.classList.add('active');
         }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.1, rootMargin: '0px 0px -20% 0px' });
 
     document.querySelectorAll('.skill-card, .project-card, .timeline-item').forEach(el => {
       el.classList.add('scroll-reveal');
@@ -1868,31 +1868,31 @@
 
     // scroll animations with proper from states
     gsap.from('.section-title, .section-label', {
-      scrollTrigger: { trigger: '.about', start: 'top 85%', toggleActions: 'play none none reverse' },
+      scrollTrigger: { trigger: '.about', start: 'top 70%', toggleActions: 'play none none reverse' },
       duration: 0.8, opacity: 0, y: 35, filter: 'blur(8px)', ease: 'power2.out'
     });
     gsap.from('.about-bio, .about-right-inner', {
-      scrollTrigger: { trigger: '.about', start: 'top 85%' },
+      scrollTrigger: { trigger: '.about', start: 'top 70%' },
       duration: 0.8, opacity: 0, y: 30, filter: 'blur(8px)', ease: 'power2.out'
     });
     gsap.from('.stat-card', {
-      scrollTrigger: { trigger: '.about-stats', start: 'top 85%' },
+      scrollTrigger: { trigger: '.about-stats', start: 'top 70%' },
       duration: 0.6, opacity: 0, y: 30, stagger: 0.08, filter: 'blur(8px)', ease: 'back.out(1.4)'
     });
     gsap.from('.skill-card', {
-      scrollTrigger: { trigger: '.skills-grid', start: 'top 85%' },
+      scrollTrigger: { trigger: '.skills-grid', start: 'top 70%' },
       duration: 0.6, opacity: 0, y: 40, stagger: 0.08, filter: 'blur(8px)', ease: 'back.out(1.5)'
     });
     gsap.from('.project-card', {
-      scrollTrigger: { trigger: '.projects-grid', start: 'top 85%' },
+      scrollTrigger: { trigger: '.projects-grid', start: 'top 70%' },
       duration: 0.6, opacity: 0, y: 40, stagger: 0.1, filter: 'blur(8px)', ease: 'back.out(1.5)'
     });
     gsap.from('.timeline-item', {
-      scrollTrigger: { trigger: '.timeline-track', start: 'top 85%' },
+      scrollTrigger: { trigger: '.timeline-track', start: 'top 70%' },
       duration: 0.6, opacity: 0, x: -30, stagger: 0.1, filter: 'blur(8px)', ease: 'back.out(1.5)'
     });
     gsap.from('.contact-form-wrap', {
-      scrollTrigger: { trigger: '.contact-form-wrap', start: 'top 85%' },
+      scrollTrigger: { trigger: '.contact-form-wrap', start: 'top 70%' },
       duration: 0.8, opacity: 0, y: 30, filter: 'blur(8px)', ease: 'power2.out'
     });
 
@@ -1907,7 +1907,7 @@
           }
         }
       });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.1, rootMargin: '0px 0px -20% 0px' });
     document.querySelectorAll('.skill-card').forEach(card => skillObserver.observe(card));
 
     // count up with animation
