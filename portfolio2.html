@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tithe Odeyemi | Software Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e12;
+    --surface: #16181d;
+    --border: #23252d;
+    --text: #f0f0f5;
+    --mut: #8b8d98;
+    --accent: #ff5b5b;
+    --radius: 24px;
+  }
+  
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+  }
+  
+  body { 
+    background: var(--bg); 
+    color: var(--text); 
+    font-family: 'Manrope', sans-serif; 
+    padding: 2rem;
+    line-height: 1.5;
+  }
+  
+  .container { 
+    max-width: 1280px; 
+    margin: 0 auto; 
+  }
+  
+  header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 3rem; 
+  }
+  
+  .logo {
+    font-weight: 800; 
+    font-size: 1.4rem;
+    letter-spacing: -0.05em;
+  }
+
+  .logo span {
+    color: var(--accent);
+  }
+  
+  .nav-btn {
+    background: var(--text); 
+    color: var(--bg); 
+    padding: 0.75rem 1.5rem; 
+    border-radius: 100px; 
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+  }
+
+  .nav-btn:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* BENTO GRID */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 280px;
+    gap: 1.5rem;
+  }
+  
+  .bento-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .bento-item:hover { 
+    transform: scale(1.02); 
+    border-color: #353846; 
+  }
+  
+  .item-intro { 
+    grid-column: span 2; 
+    grid-row: span 2; 
+    justify-content: center;
+  }
+  
+  .item-skills { 
+    grid-column: span 2; 
+  }
+  
+  .item-project { 
+    grid-column: span 2; 
+    grid-row: span 2; 
+  }
+  
+  .item-contact { 
+    grid-column: span 2; 
+    justify-content: center;
+    background: linear-gradient(135deg, var(--surface) 0%, #1e1b24 100%);
+  }
+  
+  h1 { 
+    font-size: clamp(2.5rem, 4vw, 4rem); 
+    font-weight: 800; 
+    line-height: 1.1; 
+    letter-spacing: -0.03em;
+  }
+  
+  h1.highlight {
+    color: var(--accent);
+  }
+
+  h2 { 
+    font-size: 1.5rem; 
+    margin-bottom: 1rem; 
+    font-weight: 700;
+  }
+  
+  p { 
+    color: var(--mut); 
+    font-size: 1.1rem;
+    line-height: 1.6; 
+  }
+  
+  .skills-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .chip { 
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem; 
+    background: #23252d; 
+    border-radius: 50px; 
+    font-size: 0.95rem; 
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s ease;
+  }
+
+  a.chip:hover {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .chip.primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  
+  .project-img {
+    flex: 1;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mut);
+    font-size: 0.9rem;
+    background-image: radial-gradient(circle at center, #23252d 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  @media (max-width: 900px) {
+    .bento-grid { 
+      grid-template-columns: 1fr; 
+      grid-auto-rows: auto; 
+    }
+    .item-intro, .item-skills, .item-project, .item-contact { 
+      grid-column: span 1; 
+    }
+    .bento-item {
+      padding: 2rem;
+    }
+    .project-img {
+      min-height: 200px;
+    }
+  }
+
+  /* AMBIENT BLOBS */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.6;
+    animation: blob-float 15s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .blob.one { width: 50vw; height: 50vw; background: rgba(255, 91, 91, 0.12); top: -20%; left: -10%; }
+  .blob.two { width: 40vw; height: 40vw; background: rgba(91, 140, 255, 0.08); bottom: -10%; right: -10%; animation-delay: -7s; }
+  
+  @keyframes blob-float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(6%, 10%) scale(1.1); }
+  }
+
+  /* GSAP PRE-STATES */
+  .hero-line { will-change: transform, opacity, filter; }
+  .hero-desc { will-change: transform, opacity; }
+  .bento-item { will-change: transform, opacity; }
+</style>
+</head>
+<body>
+  <div class="blob one"></div>
+  <div class="blob two"></div>
+  <div class="container">
+    <header>
+      <div class="logo">Tithe<span>.</span></div>
+      <nav>
+        <a href="mailto:hello@example.com" class="nav-btn">Get in touch</a>
+      </nav>
+    </header>
+    
+    <main class="bento-grid">
+      <!-- 1. Intro Card -->
+      <div class="bento-item item-intro">
+        <h1 class="highlight hero-line">Hi, I'm Tithe.</h1>
+        <h1 class="hero-line">Full Stack<br>Software Engineer.</h1>
+        <p class="hero-desc" style="margin-top: 1.5rem;">
+          I craft accessible, high-performance web applications. I bridge the gap between elegant UI and resilient backend architecture to solve complex problems and deliver exceptional digital experiences.
+        </p>
+      </div>
+      
+      <!-- 2. Skills Card -->
+      <div class="bento-item item-skills">
+        <h2>Technical Arsenal</h2>
+        <div class="skills-wrapper">
+          <span class="chip">JavaScript</span>
+          <span class="chip">TypeScript</span>
+          <span class="chip">Vue.js</span>
+          <span class="chip">React</span>
+          <span class="chip">Node.js</span>
+          <span class="chip">PHP / Laravel</span>
+          <span class="chip">Tailwind CSS</span>
+          <span class="chip">PostgreSQL</span>
+          <span class="chip">AWS</span>
+        </div>
+      </div>
+      
+      <!-- 3. Contact / Social Card -->
+      <div class="bento-item item-contact">
+        <h2>Let's build something great.</h2>
+        <p>I'm currently open for new opportunities and exciting freelance challenges.</p>
+        <div class="skills-wrapper" style="margin-top: 2rem;">
+          <a href="mailto:hello@example.com" class="chip primary">Email Me ↗</a>
+          <a href="#" class="chip">LinkedIn</a>
+          <a href="#" class="chip">GitHub</a>
+        </div>
+      </div>
+      
+      <!-- 4. Featured Project Card -->
+      <div class="bento-item item-project">
+        <h2>Featured Work</h2>
+        <div class="project-img">
+          Project preview loading...
+        </div>
+        <div>
+          <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Symphony Dashboard</h3>
+          <p>A comprehensive real-time analytics dashboard for scaleable enterprise apps, built with Vue and Node.js.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- GSAP Animation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script>
+    // 1. Text Blur & Entrance Animation
+    gsap.from(".hero-line", {
+      duration: 1.4,
+      y: 40,
+      opacity: 0,
+      filter: "blur(12px)",
+      stagger: 0.2,
+      ease: "power4.out",
+      delay: 0.2
+    });
+
+    gsap.from(".hero-desc", {
+      duration: 1,
+      opacity: 0,
+      y: 20,
+      delay: 0.8,
+      ease: "power3.out"
+    });
+
+    // 2. Bento Grid Staggered Popping
+    gsap.from(".bento-item", {
+      duration: 1.2,
+      scale: 0.95,
+      opacity: 0,
+      y: 30,
+      stagger: 0.1,
+      ease: "back.out(1.2)",
+      delay: 0.4
+    });
+
+    // 3. Alive elements & Desktop specific parallax (magnetic-style) mouse hover
+    document.addEventListener("mousemove", (e) => {
+      // Small parallax movement for the bento items based on cursor position
+      const xAxis = (window.innerWidth / 2 - e.pageX) / 60;
+      const yAxis = (window.innerHeight / 2 - e.pageY) / 60;
+      
+      gsap.to(".bento-item", {
+        x: xAxis,
+        y: yAxis,
+        duration: 2,
+        ease: "power2.out",
+        overwrite: "auto"
+      });
+    });
+  </script>
+</body>
+</html>
