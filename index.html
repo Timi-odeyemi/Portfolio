@@ -9,6 +9,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <style>
     :root {
       --c-bg: #ffffff;
@@ -1798,39 +1799,35 @@
   <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanilla-hot-toast@0.1.0/dist/vanilla-hot-toast.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
     // ══════════════════════════════════════════════════════════
-    // SCROLL PROGRESS BAR
+    // UNIFIED SCROLL HANDLER (throttled for performance)
     // ══════════════════════════════════════════════════════════
     const scrollProgress = document.querySelector('.scroll-progress');
-    window.addEventListener('scroll', () => {
+    const nav = document.getElementById('nav');
+    let lastScrollTime = 0;
+    const scrollThrottle = 16; // ~60fps
+    
+    const updateScroll = () => {
+      // Update scroll progress
       const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
       const scrolled = (window.scrollY / windowHeight) * 100;
       if (scrollProgress) scrollProgress.style.width = scrolled + '%';
-    });
-
-    // ══════════════════════════════════════════════════════════
-    // PARALLAX EFFECTS FOR HERO & SECTIONS
-    // ══════════════════════════════════════════════════════════
-    const parallaxElements = document.querySelectorAll('.projects, .timeline');
+      
+      // Update nav scrolled state
+      if (nav) nav.classList.toggle('scrolled', window.scrollY > 60);
+    };
+    
     window.addEventListener('scroll', () => {
-      parallaxElements.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        const elementTop = rect.top;
-        const elementHeight = rect.height;
-        const windowHeight = window.innerHeight;
-
-        // Calculate parallax offset based on viewport position
-        if (elementTop < windowHeight && elementTop + elementHeight > 0) {
-          const progress = (windowHeight - elementTop) / (windowHeight + elementHeight);
-          const offset = (progress - 0.5) * 30;
-          el.style.transform = `translateY(${offset * 0.5}px)`;
-        }
-      });
-    });
+      const now = Date.now();
+      if (now - lastScrollTime >= scrollThrottle) {
+        updateScroll();
+        lastScrollTime = now;
+      }
+    }, { passive: true });
 
     // ══════════════════════════════════════════════════════════
     // SCROLL-TRIGGERED STAGGERED REVEALS
@@ -1860,9 +1857,24 @@
       function animCursor() { if (dot) { dot.style.left = mx + 'px'; dot.style.top = my + 'px'; } rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; } requestAnimationFrame(animCursor); }
       animCursor();
     }
+    // Cursor hover effects
     document.querySelectorAll('a,button,.magnetic,.skill-card,.project-card,.stat-card,.social-link').forEach(el => { el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover')); el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover')); });
-    document.querySelectorAll('.magnetic').forEach(btn => { btn.addEventListener('mousemove', e => { const r = btn.getBoundingClientRect(); const x = e.clientX - r.left - r.width / 2; const y = e.clientY - r.top - r.height / 2; btn.style.transform = `translate(${x * 0.18}px, ${y * 0.18}px)`; }); btn.addEventListener('mouseleave', () => { btn.style.transform = ''; }); });
-    window.addEventListener('scroll', () => { document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60); });
+    
+    // Magnetic button effect (throttled for better performance)
+    let magneticThrottle = {};
+    document.querySelectorAll('.magnetic').forEach(btn => { 
+      btn.addEventListener('mousemove', e => { 
+        const now = Date.now();
+        if (now - (magneticThrottle[btn] || 0) > 16) {
+          const r = btn.getBoundingClientRect(); 
+          const x = e.clientX - r.left - r.width / 2; 
+          const y = e.clientY - r.top - r.height / 2; 
+          btn.style.transform = `translate(${x * 0.18}px, ${y * 0.18}px)`; 
+          magneticThrottle[btn] = now;
+        }
+      }, { passive: true }); 
+      btn.addEventListener('mouseleave', () => { btn.style.transform = ''; }); 
+    });
 
     // Simplified and robust GSAP: no conflicting opacity resets, ensures all elements become visible
     gsap.set('.section-title, .section-label, .about-bio, .contact-desc, .stat-card, .skill-card, .project-card, .timeline-item, .contact-form-wrap, .about-right-inner', { opacity: 1, filter: 'blur(0px)', y: 0 }); // ensure defaults are visible first
@@ -1992,28 +2004,21 @@
         }
       });
     });
-    // particle canvas (simple aesthetic)
-    const canvas = document.getElementById('particle-canvas');
-    if (canvas) {
-      let ctx = canvas.getContext('2d');
-      let particles = [];
-      function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
-      for (let i = 0; i < 80; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5 + 0.5, alpha: Math.random() * 0.3 + 0.1, vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2 }); }
-      function drawParticles() { if (!ctx) return; ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#000'; for (let p of particles) { ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(0,0,0,${p.alpha})`; ctx.fill(); p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0; if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0; } requestAnimationFrame(drawParticles); }
-      drawParticles();
-    }
+    // Particle canvas disabled for better performance
     // ══════════════════════════════════════════════════════════
-    // SLOWED SMOOTH SCROLLING (LENIS)
+    // SLOWED SMOOTH SCROLLING (LENIS) - with mobile optimization
     // ══════════════════════════════════════════════════════════
+    const isMobile = () => window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     const lenis = new Lenis({
-      duration: 0.8,
+      duration: isMobile() ? 0.6 : 0.8,
       easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t),
       direction: 'vertical',
       gestureDirection: 'vertical',
       smooth: true,
-      mouseMultiplier: 1.0,
+      mouseMultiplier: isMobile() ? 0.8 : 1.0,
+      touchMultiplier: 1.5,
+      wheelMultiplier: 1.0,
     });
 
     function raf(time) {
@@ -2030,7 +2035,7 @@
         const targetEl = document.querySelector(targetId);
         if (targetEl) {
           e.preventDefault();
-          lenis.scrollTo(targetEl, { offset: 0, duration: 1.0 });
+          lenis.scrollTo(targetEl, { offset: 0, duration: isMobile() ? 0.8 : 1.0 });
         }
       });
     });
@@ -2050,13 +2055,23 @@
         
         console.log("Sending payload:", json); // Debug log
         
-        if (result) {
-          result.innerHTML = "Please wait...";
-          result.style.display = "block";
-          result.style.color = "var(--c-text)";
-          result.style.marginTop = "10px";
-          result.style.fontSize = "0.9rem";
-        }
+        // Show loading toast
+        let toastObj = Toastify({
+          text: "Sending message...",
+          duration: -1,
+          close: false,
+          gravity: "top",
+          position: "center",
+          style: {
+            background: "var(--c-text)",
+            color: "var(--c-bg)",
+            borderRadius: "var(--radius-sm)",
+            fontFamily: "var(--font-body)",
+            boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)",
+            border: "1px solid rgba(255,255,255,0.1)"
+          }
+        });
+        toastObj.showToast();
 
         fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
@@ -2070,47 +2085,38 @@
                 console.log("Response status:", response.status); // Debug log
                 let resJson = await response.json();
                 console.log("Response JSON:", resJson); // Debug log
+                
+                toastObj.hideToast();
 
                 if (response.status == 200) {
-                    if (window.toast) {
-                      toast.success("Message sent successfully!", {
-                        duration: 4000,
-                        position: 'bottom-center',
-                        style: {
-                          background: '#111',
-                          color: '#fff',
-                          fontFamily: 'Quicksand, sans-serif'
-                        }
-                      });
-                    }
-                    if (result) result.style.display = "none";
+                    Toastify({
+                      text: "Message sent successfully!",
+                      duration: 4000,
+                      gravity: "top",
+                      position: "center",
+                      style: { background: "var(--c-text)", color: "#4CAF50", borderRadius: "var(--radius-sm)", fontFamily: "var(--font-body)", padding: "12px 24px", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)" }
+                    }).showToast();
                     form.reset();
                 } else {
-                    if (window.toast) {
-                      toast.error(resJson.message || "Submission failed");
-                    }
-                    if (result) {
-                      result.innerHTML = resJson.message || "Submission failed";
-                      result.style.color = "red";
-                    }
+                    Toastify({
+                      text: "Submission failed. Please try again.",
+                      duration: 4000,
+                      gravity: "top",
+                      position: "center",
+                      style: { background: "var(--c-text)", color: "#F44336", borderRadius: "var(--radius-sm)", fontFamily: "var(--font-body)", padding: "12px 24px", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)" }
+                    }).showToast();
                 }
             })
             .catch(error => {
                 console.error("Fetch error:", error); // Debug log
-                if (window.toast) {
-                  toast.error("Something went wrong!");
-                }
-                if (result) {
-                  result.innerHTML = "Something went wrong!";
-                  result.style.color = "red";
-                }
-            })
-            .finally(() => {
-                if (result && !result.innerHTML.includes("success")) {
-                  setTimeout(() => {
-                      if (result) result.style.display = "none";
-                  }, 5000);
-                }
+                toastObj.hideToast();
+                Toastify({
+                  text: "Something went wrong. Please try again.",
+                  duration: 4000,
+                  gravity: "top",
+                  position: "center",
+                  style: { background: "var(--c-text)", color: "#F44336", borderRadius: "var(--radius-sm)", fontFamily: "var(--font-body)", padding: "12px 24px", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.15)" }
+                }).showToast();
             });
       });
     }
